@@ -1,13 +1,22 @@
 import {createStore} from 'redux';
 
-const INITAIAL_STORE = ['estudar, dormir'];
+const INITIAL_STATE = [
+  {text: 'estudar', id: 1, completed: false},
+  {text: 'dormir', id: 2, completed: true},
+];
 
-function reducer(state = INITAIAL_STORE, action) {
-  if (action.type === 'ADD_TODO') {
-    return [...state, action.text];
+function reducer(state = INITIAL_STATE, action) {
+  switch (action.type) {
+    case 'ADD_TODO':
+      return [
+        ...state,
+        {id: Math.random(), text: action.payload.text}
+      ];
+    case 'MARK_AS_COMPLETED':
+      return state.map(todo => todo.id === action.payload.id ? {...todo, completed: !todo.completed} : todo);
+    default:
+      return state;
   }
-  console.log(action);
-  return state;
 }
 
 const store = createStore(reducer);
