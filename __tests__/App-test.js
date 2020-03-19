@@ -2,13 +2,13 @@
  * @format
  */
 
-import 'react-native';
 import React from 'react';
-import App from '../App';
-
+import Login from '../src/pages/login';
+import {mount, shallow} from 'enzyme';
 // Note: test renderer must be required after react-native.
-import renderer from 'react-test-renderer';
 
 it('renders correctly', () => {
-  renderer.create(<App />);
+  const wrapper = shallow(<Login />);
+
+  expect(wrapper.find('Container').exists()).toBe(true);
 });
