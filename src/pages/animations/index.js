@@ -1,52 +1,57 @@
 import React, {Component} from 'react';
-import {Animated, View, StyleSheet} from 'react-native';
+import {Animated, View, StyleSheet, PanResponder} from 'react-native';
 
 export default class Animations extends Component {
   state = {
-    ballY: new Animated.Value(0),
-    ballX: new Animated.Value(0),
+    ball: new Animated.ValueXY({x: 0, y: 0}),
   };
 
-  componentDidMount() {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(this.state.ballY, {
-          toValue: 200,
-          duration: 500,
-        }),
+  UNSAFE_componentWillMount() {
+    this._panResponder = PanResponder.create({
+      onMoveShouldSetPanResponder: (e, gestureState) => true,
+      onPanResponderGrant: (e, gestureState) => {
+        this.state.ball.setOffset({
+          x: this.state.ball.x._value,
+          y: this.state.ball.y._value,
+        });
 
-        Animated.delay(200),
-
-        Animated.timing(this.state.ballX, {
-          toValue: 200,
-          duration: 500,
-        }),
-
-        Animated.delay(200),
-
-        Animated.timing(this.state.ballY, {
-          toValue: 0,
-          duration: 500,
-        }),
-
-        Animated.delay(200),
-
-        Animated.timing(this.state.ballX, {
-          toValue: 0,
-          duration: 500,
-        }),
-      ]),
-      {
-        iterations: 4,
+        this.state.ball.setValue({x: 0, y: 0});
       },
-    ).start();
+      onPanResponderMove: Animated.event(
+        [
+          null,
+          {
+            dx: this.state.ball.x,
+            dy: this.state.ball.y,
+          },
+        ],
+        {
+          listener: (e, gestureState) => {
+            console.log(gestureState);
+          },
+        },
+      ),
+
+      onPanResponderRelease: () => {
+        this.state.ball.flattenOffset();
+      },
+    });
   }
 
   render() {
     return (
       <View style={styles.container}>
         <Animated.View
-          style={[styles.ball, {top: this.state.ballY, left: this.state.ballX}]}
+          {...this._panResponder.panHandlers}
+          style={[
+            styles.ball,
+            {
+              transform: [
+                {translateX: this.state.ball.x},
+                {translateY: this.state.ball.y},
+              ],
+            },
+          ]}
         />
       </View>
     );
