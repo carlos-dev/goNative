@@ -4,19 +4,50 @@ import {Animated, View, StyleSheet} from 'react-native';
 export default class Animations extends Component {
   state = {
     ballY: new Animated.Value(0),
+    ballX: new Animated.Value(0),
   };
 
   componentDidMount() {
-    Animated.timing(this.state.ballY, {
-      toValue: 500,
-      duration: 500,
-    }).start();
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(this.state.ballY, {
+          toValue: 200,
+          duration: 500,
+        }),
+
+        Animated.delay(200),
+
+        Animated.timing(this.state.ballX, {
+          toValue: 200,
+          duration: 500,
+        }),
+
+        Animated.delay(200),
+
+        Animated.timing(this.state.ballY, {
+          toValue: 0,
+          duration: 500,
+        }),
+
+        Animated.delay(200),
+
+        Animated.timing(this.state.ballX, {
+          toValue: 0,
+          duration: 500,
+        }),
+      ]),
+      {
+        iterations: 4,
+      },
+    ).start();
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <Animated.View style={[styles.ball, {top: this.state.ballY}]} />
+        <Animated.View
+          style={[styles.ball, {top: this.state.ballY, left: this.state.ballX}]}
+        />
       </View>
     );
   }
